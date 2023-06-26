@@ -1,0 +1,203 @@
+\documentclass[twoside,draft,a4paper]{article}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[left=1in,right=1in,top=1.5in,bottom=1.5in]{geometry}
+\usepackage{enumitem}
+\usepackage{parskip}
+
+\setlist[itemize]{label=$\cdot$,leftmargin=1em}
+\setlength{\parskip}{1em}
+
+\title{Further optimization of the $t\bar{t}H$ Signal and background separation using deep learning in the $2l_{SS}1\tau$ channel.}
+\author{Vladyslav Yazykov}
+
+\begin{document}
+\maketitle
+
+
+
+\section{Introduction}
+
+In this study we aim to further improve the performance of the classifier used to separate the process of interest
+($t\bar{t}H$) from the background processes.
+
+We have moved to the v8 of the ntuples, and have also made changes to the optimization part itself. We have applied the
+transformer architecture, experimented with fine-tuning, tried different weight configurations, and have experimented
+with the training on the extended dataset, obtained by dropping all the selection cuts. We have experimented with
+different feature sets, and have proposed an automated way of selecting the well-modelled features.
+
+We have evaluated the uncertainty on the median signal strength parameter $\mu_{t\bar{t}H}$, considering both the
+statistical and systematical uncertainties.
+
+
+
+\section{V8 adaptation}
+
+
+\subsection{Preselection/signal region details}
+
+\begin{itemize}
+    \item Preselection expression as is
+    \item List of samples
+    \item Several control regions plots
+    \item Signal region plot
+    \item Number of events (raw/weighted, SR only/all)
+\end{itemize}
+
+
+\subsection{New/changed features}
+
+This can just be a table with:
+
+\begin{itemize}
+    \item All the feature names.
+    \item Sorted by importance.
+    \item Maybe short description.
+    \item Indication whether it was used in the previous analysis.
+    \item Separation of the top 20 features.
+\end{itemize}
+
+
+
+\section{Optimization improvements}
+
+
+\subsection{Baseline - mlp/resnet}
+
+\begin{itemize}
+    \item Severin just used MLPs. He also tried combining the MLPs together, but this is fundamentally the same stuff -
+          just a big MLP.
+    \item As a baseline, we use a slightly improved version of it - with residual connections. We refer to it as ResNet.
+    \item Describe that better to use deep nets then wide, because wide ResNets can juts memorize and overfit easily.
+\end{itemize}
+
+
+\subsection{Feature Tokenizer - Transformer (FT-Transformer)}
+
+(Refer to the same paper.)
+
+
+\subsection{Increasing statistics by dropping the cuts}
+
+\begin{enumerate}
+    \item Does it make much difference for transformers and ResNets both or only for transformers?
+    \item How do BDT behave in this case?
+\end{enumerate}
+
+\subsection{Trying to differentiate between all the classes, or just signal and background?}
+
+Severin has done this experiment as well, but we take it one step further. First, we evaluate how do the models perform
+when we try to differentiate between all the classes, compared to just signal and background.
+
+Then, we compare it with training on all the classes, and fine-tuning on signal and background only.
+
+
+\subsection{Using (or not using?) event weights \em{correctly}}
+
+\textbf{The meaning of Cross-Entropy loss weights is very different from the standard event weights.}
+
+E.g. how should the event weights be used. Explain that Severin has not used them correctly,
+but we don't really know how to use them correctly.
+
+(We should present the training runs with and without weights. For different configurations.)
+
+Maybe just write that we didn't use the weights during the training, so we don't need to re-weight anything.
+
+
+\subsection{Effect of the reduced training set size}
+
+Interestingly, we observe some strange stuff.
+
+From $10\% \rightarrow 20\% \rightarrow 50\% \rightarrow 80\%$ performance increases have diminishing returns.
+But from $80\% \rightarrow 100\%$ the performance increase is much larger.
+
+I also don't understand why \verb|trn/loss| is different for different training set sizes. As we should just use the
+average.
+
+Also, I cannot reproduce my initial results with very high AUC scores. I don't know what I did wrong. But looks like I
+messed up with the features somewhere along the way. Or maybe it's indeed the scale factors (SF)?
+
+
+\subsection{Effect of the reduced feature set}
+
+Reducing the total number of features reduces the systematical uncertainties. That is why it's best to have as few
+features as possible. However, the trade-off is that we lose some information which likely leads to a reduced
+performance of the classifier.
+
+Furthermore, to have trustworthy results, we need to make sure the features used are well modelled. That is, the
+distributions of the features in the simulated data agrees with the recorded data well enough.
+
+Selected feature sets:
+
+\begin{itemize}
+    \item All features
+    \item Only well-modelled features
+    \item Top 20 most important features (from all features)
+    \item Top 20 best modelled features
+    \item Top 20 most important (of the well-modelled)
+    \item Top 20 features with least systematical uncertainty contribution (is this possible?)
+    \item Nello's features
+\end{itemize}
+
+
+\subsection{Results, comparison between different models}
+
+\begin{itemize}
+    \item ROCs + AUCs
+    \item Significance, threshold scanning, thresholds
+    \item Confusion matrices (for different thresholds)
+    \item NN output - ttH probability distribution
+\end{itemize}
+
+
+
+\section{$\mu_{t\bar{t}H}$ - median signal strength estimation}
+
+Uncertainty using just the statistical uncertainty is:
+
+$$
+    \mu_{t\bar{t}H} + 0.999 /-0.999
+$$
+
+By including the systematical uncertainty, we get:
+
+$$
+    \mu_{t\bar{t}H} + 0.999 /-0.999
+$$
+
+
+
+\section{Conclusions}
+
+We have made a very important research.
+
+
+
+\section{Appendix}
+
+
+\subsection{Automated well-modelling estimation}
+
+This "well enough" usually just means that a person looks at the plots and decides if the agreement is good enough.
+But we propose an automated way of doing this. As the algorithm is basically checking if the number of weighted events
+in each bin is the same for the simulated and recorded data. However, only the bins where the signal to background ratio
+is high enough are considered.
+
+Each bin thus contributes to the well-modelling score. If the bin is blinded, the contribution is zero. Otherwise, the
+contribution for the bin is:
+
+$$
+    \text{Bin Contribution} = 1 - \frac{N_\text{Recorded} - N_\text{Simulation}}{\max(N_\text{Recorded}, N_\text{Simulation})}
+$$
+
+Where $N_\text{Recorded}$ and $N_\text{Simulation}$ are the number of weighted events in the bin for the recorded and
+simulated data respectively.
+
+The total well-modelling score is then the mean of the contributions for all the bins.
+
+
+
+\subsection{Training times}
+
+\end{document}
