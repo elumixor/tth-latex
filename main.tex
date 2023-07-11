@@ -11,35 +11,63 @@
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{longtable}
+\usepackage{biblatex}
+\usepackage{xspace}
+\usepackage{tikz-feynhand}
 
+\addbibresource{bibliography.bib}
 
 \setlist[itemize]{label=$\cdot$,leftmargin=1em}
 \setlength{\parskip}{1em}
 
-\title{Further optimization of the $t\bar{t}H$ signal and background separation using deep learning in the 
+% Custom commands
+\newcommand{\ttH}{\ensuremath{{t\bar{t}H}}\xspace}
+\newcommand{\tth}{\ttH}
+
+\title{Further optimization of the \ttH signal and background separation using deep learning in the
     $2l_{SS}1\tau$ channel.}
 
 \author{Vladyslav Yazykov}
 \date{}
 
-
-
+% Glossaries
 \input{glossaries.tex}
+
+% Change the \includeonly later
+\includeonly{sections/mu/_section.tex}
 
 \begin{document}
 
+% Title
 \maketitle
 
+% Glossaries
+\printglossary[type=\acronymtype,title=Abbreviations]
 
+% Main sections
+\include{sections/introduction/_section.tex}
+\include{sections/v8/_section.tex}
+\include{sections/optimization/_section.tex}
+\include{sections/mu/_section.tex}
+\include{sections/conclusions/_section.tex}
+\include{sections/appendix/_section.tex}
 
-% Uncomment later
+% Feynman diagram example
+% \begin{equation}
+%     \begin{tikzpicture}
+%         \begin{feynhand}
+%             \vertex[ringdot,label=above:{s}] (v) at (0,0) {};
+%             \vertex[right=of v] (f1) ;
+%             \vertex [above left=of v] (i1);
+%             \vertex [below left=of v] (i2);
+%             \propag [fermion, momentum'=\(p_1\)] (i1) to (v);
+%             \propag [anti fermion,momentum'=\(p_2\)] (i2) to (v);
+%             \propag [boson, momentum'=\(p_3\)] (v) to (f1);
+%         \end{feynhand}
+%     \end{tikzpicture}
+% \end{equation}
 
-% \input{sections/introduction/section.tex}
-% \input{sections/v8/section.tex}
-\input{sections/optimization/section.tex}
-% \input{sections/mu/section.tex}
-% \input{sections/conclusions/section.tex}
-% \input{sections/appendix/section.tex}
-
+% Bibliography
+\printbibliography
 
 \end{document}

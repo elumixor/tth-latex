@@ -1,90 +1,10 @@
 \section{Optimization improvements}
 
-
-\subsection{Baseline - mlp/resnet}
-
-\begin{itemize}
-    \item Severin just used MLPs. He also tried combining the MLPs together, but this is fundamentally the same stuff -
-          just a big MLP.
-    \item As a baseline, we use a slightly improved version of it - with residual connections. We refer to it as ResNet.
-    \item Describe that better to use deep nets then wide, because wide ResNets can juts memorize and overfit easily.
-\end{itemize}
-
-
-\subsection{Feature Tokenizer - Transformer (FT-Transformer)}
-
-(Refer to the same paper.)
-
-
-\subsection{Increasing statistics by dropping the cuts}
-
-\begin{enumerate}
-    \item Does it make much difference for transformers and ResNets both or only for transformers?
-    \item How do BDT behave in this case?
-\end{enumerate}
-
-\subsection{Trying to differentiate between all the classes, or just signal and background?}
-
-Severin has done this experiment as well, but we take it one step further. First, we evaluate how do the models perform
-when we try to differentiate between all the classes, compared to just signal and background.
-
-Then, we compare it with training on all the classes, and fine-tuning on signal and background only.
-
-
-\subsection{Using (or not using?) event weights \em{correctly}}
-
-\textbf{The meaning of Cross-Entropy loss weights is very different from the standard event weights.}
-
-E.g. how should the event weights be used. Explain that Severin has not used them correctly,
-but we don't really know how to use them correctly.
-
-(We should present the training runs with and without weights. For different configurations.)
-
-Maybe just write that we didn't use the weights during the training, so we don't need to re-weight anything.
-
-
-\subsection{Effect of the reduced training set size}
-
-Interestingly, we observe some strange stuff.
-
-From $10\% \rightarrow 20\% \rightarrow 50\% \rightarrow 80\%$ performance increases have diminishing returns.
-But from $80\% \rightarrow 100\%$ the performance increase is much larger.
-
-I also don't understand why \verb|trn/loss| is different for different training set sizes. As we should just use the
-average.
-
-Also, I cannot reproduce my initial results with very high AUC scores. I don't know what I did wrong. But looks like I
-messed up with the features somewhere along the way. Or maybe it's indeed the scale factors (SF)?
-
-
-\subsection{Effect of the reduced feature set}
-
-Reducing the total number of features reduces the systematical uncertainties. That is why it's best to have as few
-features as possible. However, the trade-off is that we lose some information which likely leads to a reduced
-performance of the classifier.
-
-Furthermore, to have trustworthy results, we need to make sure the features used are well modelled. That is, the
-distributions of the features in the simulated data agrees with the recorded data well enough.
-
-Selected feature sets:
-
-\begin{itemize}
-    \item All features
-    \item Only well-modelled features
-    \item Top 20 most important features (from all features)
-    \item Top 20 best modelled features
-    \item Top 20 most important (of the well-modelled)
-    \item Top 20 features with least systematical uncertainty contribution (is this possible?)
-    \item Nello's features
-\end{itemize}
-
-
-
-\subsection{Results, comparison between different models}
-
-\begin{itemize}
-    \item ROCs + AUCs
-    \item Significance, threshold scanning, thresholds
-    \item Confusion matrices (for different thresholds)
-    \item NN output - ttH probability distribution
-\end{itemize}
+\input{sections/optimization/1_baseline_mlp.tex}
+\input{sections/optimization/2_transformer.tex}
+\input{sections/optimization/3_dropping_cuts.tex}
+\input{sections/optimization/4_classes_fine_tuning.tex}
+\input{sections/optimization/5_weights.tex}
+\input{sections/optimization/6_reduced_training_set.tex}
+\input{sections/optimization/7_reduced_feature_set.tex}
+\input{sections/optimization/8_additional.tex}
